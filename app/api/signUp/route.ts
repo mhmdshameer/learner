@@ -2,6 +2,7 @@ import { connectToMongoDB } from "@/lib/mongodb";
 import User from "@/models/userModel";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 export async function POST(req: Request){
     try {
@@ -18,7 +19,9 @@ export async function POST(req: Request){
 
         await newUser.save();
 
-        return NextResponse.json({message: "User created successfully", user: newUser}, {status: 201});
+        const token = jwt.sign({id: newUser._id, email: newUser.email}, process.env.JWT_SECRET!, {expiresIn: "1d"} );
+
+        return NextResponse.json({message: "User created successfully", user: newUser, token}, {status: 201});
     } catch (error) {
         console.log("Signup error: ", error);
         return NextResponse.json({message: "Signup failed"}, {status: 500});
