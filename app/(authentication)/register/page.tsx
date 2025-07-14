@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { TbEye, TbEyeOff } from "react-icons/tb";
+import axios from "axios";
 
 export default function Register() {
   const [data, setData] = useState({
@@ -12,9 +13,13 @@ export default function Register() {
   });
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(data);
+    try {
+      const response = await axios.post("/api/signUp", data);
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f4f6fa]">
