@@ -4,8 +4,10 @@ import Link from "next/link";
 import { useState } from "react";
 import { TbEye, TbEyeOff } from "react-icons/tb";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 export default function Register() {
+  const router = useRouter();
   const [data, setData] = useState({
     name: "",
     email: "",
@@ -17,6 +19,9 @@ export default function Register() {
     e.preventDefault();
     try {
       const response = await axios.post("/api/signUp", data);
+      const token = response.data.token;
+      localStorage.setItem("token", token);
+      router.push("/");
     } catch (error) {
       console.log(error);
     }
