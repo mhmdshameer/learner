@@ -14,7 +14,7 @@ export default function Home() {
       return;
     }
     try {
-      const userData = jwt.verify(token, process.env.NEXT_PUBLIC_JWT_SECRET!) as { email: string };
+      const userData = jwt.decode(token) as { email: string };
       setUser(userData);
     } catch {
       router.replace("/login");
