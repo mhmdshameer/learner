@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { TbEye, TbEyeOff } from "react-icons/tb";
+import axios from "axios";
 
 export default function Login() {
   const [show, setShow] = useState(false)
@@ -15,19 +16,17 @@ export default function Login() {
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await fetch("/api/signIn", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({email, password}),
-      });
-      const data = await response.json();
-      if(response.ok){
-        localStorage.setItem("token", data.token);
-        router.replace("/");
-      }else{}
-      setError(data.message);
+      const response = await axios.post("/api/signIn",{email, password});
+      const data = response.data;
+
+      localStorage.setItem("token", data.token);
+      router.replace("/")
     } catch (error) {
-      console.log(error);
+      if(axios.isAxiosError(error)){
+        setError(error.response?.data?.message || "Something went wrong")
+      }else{
+        console.log(error);
+      }
     }
   }
   return (
