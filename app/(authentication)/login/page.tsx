@@ -10,7 +10,6 @@ export default function Login() {
   const [show, setShow] = useState(false)
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -23,7 +22,7 @@ export default function Login() {
       router.replace("/")
     } catch (error) {
       if(axios.isAxiosError(error)){
-        setError(error.response?.data?.message || "Something went wrong")
+        console.log(error.response?.data);
       }else{
         console.log(error);
       }
@@ -35,7 +34,7 @@ export default function Login() {
         <h1 className="text-2xl font-bold text-center mb-6 text-[#1e1e2f]">
           Login
         </h1>
-        <p className="text-sm text-center text-gray-400 mb-6">If you don't have an account, please <Link href="/register" className="text-blue-500">register</Link></p>
+        <p className="text-sm text-center text-gray-400 mb-6">If you don’t have an account, please <Link href="/register" className="text-blue-500">register</Link></p>
         <form className="space-y-4" onSubmit={handleLogin}>
           <label htmlFor="email" className="font-bold text-sm text-gray-400">
             Email
