@@ -51,13 +51,13 @@ export default function Register() {
           <CldUploadButton
             uploadPreset="family_tree_upload"
             onSuccess={(result: CloudinaryUploadWidgetResults) => {
-              console.log(result);
-              if (
-                typeof result.info === "object" &&
-                "secure_url" in result.info
-              ) {
-                const info = result.info as { secure_url: string };
+              console.log("Full result:", result);
+
+              if (typeof result.info !== "string" && result.info) {
+                const info = result.info;
                 setData((prev) => ({ ...prev, imageUrl: info.secure_url }));
+              } else {
+                console.warn("Upload canceled or failed:", result.info);
               }
             }}
           />
