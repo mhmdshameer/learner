@@ -5,11 +5,8 @@ import { useState } from "react";
 import { TbEye, TbEyeOff } from "react-icons/tb";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import {
-  CldUploadButton,
-  CloudinaryUploadWidgetResults,
-} from "next-cloudinary";
 import Image from "next/image";
+import { AvatarUploader } from "@/app/components/AvatarUploader";
 
 export default function Register() {
   const router = useRouter();
@@ -48,20 +45,9 @@ export default function Register() {
           <label htmlFor="profile" className="font-bold text-sm text-gray-400">
             Profile Picture
           </label>
-          <CldUploadButton
-            uploadPreset="family_tree_upload"
-            onSuccess={(result: CloudinaryUploadWidgetResults) => {
-              console.log("Full result:", result);
-
-              if (typeof result.info !== "string" && result.info) {
-                const info = result.info;
-                setData((prev) => ({ ...prev, imageUrl: info.secure_url }));
-              } else {
-                console.warn("Upload canceled or failed:", result.info);
-              }
-            }}
+          <AvatarUploader
+            onUploadSuccess={(url) => setData((prev) => ({ ...prev, imageUrl: url }))}
           />
-
           {data.imageUrl && (
             <Image
               src={data.imageUrl}
