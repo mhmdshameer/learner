@@ -19,7 +19,7 @@ export function AvatarUploader({ onUploadSuccess }: AvatarUploaderProps) {
 
   return (
     <CldUploadWidget
-      uploadPreset="family_tree_upload"
+      uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "family_tree_upload"}
       onSuccess={(result) => {
         console.log("Upload result:", result);
         if (
@@ -32,8 +32,14 @@ export function AvatarUploader({ onUploadSuccess }: AvatarUploaderProps) {
         }
       }}
       options={{
-        folder: "family_members",
+        folder: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_FOLDER || "family_members",
         singleUploadAutoClose: true,
+        sources: ["local", "url", "camera"],
+        multiple: false,
+        maxFiles: 1,
+        resourceType: "image",
+        clientAllowedFormats: ["jpg", "jpeg", "png", "gif", "webp"],
+        maxFileSize: 10000000, // 10MB
       }}
     >
       {({ open }) => (
