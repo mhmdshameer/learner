@@ -21,6 +21,7 @@ export default function Register() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
+      console.log("Data: ", data);
       const response = await axios.post("/api/signUp", data);
       const token = response.data.token;
       localStorage.setItem("token", token);
