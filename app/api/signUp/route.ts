@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 
 export async function POST(req: Request) {
   try {
-    const { name, email, password } = await req.json();
+    const { name, email, password, imageUrl } = await req.json();
     await connectToMongoDB();
 
     const userExists = await User.findOne({ email });
@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     }
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = new User({ name, email, password: hashedPassword });
+    const newUser = new User({ name, email, password: hashedPassword, imageUrl });
 
     await newUser.save();
 
