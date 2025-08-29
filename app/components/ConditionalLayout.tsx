@@ -1,6 +1,7 @@
 "use client"
 
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/app/components/app-sidebar"
 
@@ -10,14 +11,29 @@ interface ConditionalLayoutProps {
 
 export function ConditionalLayout({ children }: ConditionalLayoutProps) {
   const pathname = usePathname()
+  const router = useRouter()
+  const [checked, setChecked] = useState(false)
   
   // Pages where sidebar should NOT be shown
   const authPages = ['/login', '/register']
   const isAuthPage = authPages.includes(pathname)
   
-  if (isAuthPage) {
-    return <>{children}</>
-  }
+  useEffect(() => {
+    if (isAuthPage) {
+      // No auth guard on auth pages
+      setChecked(true)
+      return
+    }
+    const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null
+    if (!token) {
+      router.replace('/login')
+      return
+    }
+    setChecked(true)
+  }, [isAuthPage, router, pathname])
+
+  if (isAuthPage) return <>{children}</>
+  if (!checked) return null
   
   return (
     <SidebarProvider>

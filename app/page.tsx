@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 
 interface UserDataProps {
     email: string;
@@ -9,40 +8,70 @@ interface UserDataProps {
     imageUrl: string;
 }
 
+type ErrorPayload = { message?: string };
+const isErrorPayload = (val: unknown): val is ErrorPayload => {
+  return typeof val === "object" && val !== null && "message" in val;
+};
+
 export default function Home() {
   const [user, setUser] = useState<UserDataProps | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    router.replace("/login");
-  }
 
   const getUserData = async (token: string) => {
     try {
       const response = await fetch("/api/user", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
+      if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          router.replace("/login");
+          return;
+        }
+        let message = "Failed to load user";
+        try {
+          const errData: unknown = await response.json();
+          if (isErrorPayload(errData) && typeof errData.message === "string") {
+            message = errData.message;
+          }
+        } catch {}
+        setError(message);
+        return;
+      }
       const data = await response.json();
       setUser(data.user);
-    } catch (error) {
-      console.log(error);
+    } catch (e) {
+      console.log(e);
+      setError("Network error");
+    } finally {
+      setLoading(false);
     }
   }
 
   useEffect(() => {
+    let isMounted = true;
     const token = localStorage.getItem("token");
     if (!token) {
       router.replace("/login");
+      setLoading(false);
       return;
     }
-    getUserData(token);
+    (async () => {
+      if (!isMounted) return;
+      await getUserData(token);
+    })();
+    return () => { isMounted = false; };
   }, [router]);
 
+  if (loading) {
+    return <div className="flex h-dvh items-center justify-center text-gray-600">Loading...</div>;
+  }
+  if (error) {
+    return <div className="p-6 text-red-600">{error}</div>;
+  }
   if (!user) {
-    return null; // Component will unmount due to router.replace in useEffect
+    return null; // Safety: if no user after loading, render nothing.
   }
 
   return (
@@ -53,27 +82,6 @@ export default function Home() {
           <div>
             <h1 className="text-2xl font-bold text-[#1e1e2f]">Welcome back, {user.name}!</h1>
             <p className="text-gray-600">Dashboard</p>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-3">
-              <Image 
-                src={user.imageUrl} 
-                alt={user.name} 
-                width={40} 
-                height={40} 
-                className="rounded-full object-cover"
-              />
-              <div className="text-sm">
-                <p className="font-medium text-[#1e1e2f]">{user.name}</p>
-                <p className="text-gray-500">{user.email}</p>
-              </div>
-            </div>
-            <button 
-              className="bg-[#1e1e2f] text-white px-4 py-2 rounded-md hover:bg-[#1e1e2f]/80 transition-colors" 
-              onClick={handleLogout}
-            >
-              Logout
-            </button>
           </div>
         </div>
       </header>
@@ -87,7 +95,7 @@ export default function Home() {
               <h3 className="text-lg font-semibold text-[#1e1e2f] mb-2">Family Tree</h3>
               <p className="text-gray-600 mb-4">Manage your family connections</p>
               <button className="text-blue-600 hover:text-blue-800 font-medium">
-                View Family Tree →
+                View Family Tree
               </button>
             </div>
             
@@ -95,7 +103,7 @@ export default function Home() {
               <h3 className="text-lg font-semibold text-[#1e1e2f] mb-2">Profile</h3>
               <p className="text-gray-600 mb-4">Update your personal information</p>
               <button className="text-blue-600 hover:text-blue-800 font-medium">
-                Edit Profile →
+                Edit Profile
               </button>
             </div>
             
@@ -103,7 +111,7 @@ export default function Home() {
               <h3 className="text-lg font-semibold text-[#1e1e2f] mb-2">Settings</h3>
               <p className="text-gray-600 mb-4">Customize your experience</p>
               <button className="text-blue-600 hover:text-blue-800 font-medium">
-                Open Settings →
+                Open Settings
               </button>
             </div>
           </div>
