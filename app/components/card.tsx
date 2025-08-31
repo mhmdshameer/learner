@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2, UserPlus } from "lucide-react";
 import React from "react";
+import { AddMemberModal } from "./modals/AddMember";
 
 type MemberCardProps = {
   relation?: string;
@@ -26,6 +27,7 @@ export default function MemberCard({
 }: MemberCardProps) {
   const fallback = "/next.svg";
 
+  const [open, setOpen] = React.useState(false);
   return (
     <div
       className={`group relative w-[140px] h-[180px] overflow-hidden rounded-2xl shadow-md ring-1 ring-black/5 ${className ?? ""}`}
@@ -84,12 +86,13 @@ export default function MemberCard({
             size="icon"
             className="bg-transparent hover:bg-transparent text-white hover:text-white shadow-none hover:shadow-none size-7"
             aria-label={`Add member related to ${name}`}
-            onClick={onAdd}
+            onClick={() => setOpen(true)}
           >
             <UserPlus className="h-3 w-3" />
           </Button>
         </div>
       </div>
+      <AddMemberModal open={open} onOpenChange={setOpen} parentName={name} onSubmit={onAdd} />
     </div>
   );
 }
