@@ -24,6 +24,10 @@ export const GET = async (req: Request) => {
         return NextResponse.json({message: "User found", user}, {status: 200});
     } catch (error) {
         console.log(error)
+        const name = typeof error === "object" && error !== null ? (error as { name?: string }).name : undefined;
+        if (name === "TokenExpiredError" || name === "JsonWebTokenError" || name === "NotBeforeError") {
+            return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+        }
         return NextResponse.json({message: "Internal server error"}, {status: 500});
     }
 }

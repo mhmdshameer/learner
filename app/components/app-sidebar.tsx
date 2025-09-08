@@ -58,6 +58,9 @@ export function AppSidebar() {
         const res = await fetch('/api/user', { headers: { Authorization: `Bearer ${token}` } })
         if (!mounted) return
         if (res.status === 401 || res.status === 403) {
+          if (typeof window !== 'undefined') {
+            localStorage.removeItem('token')
+          }
           router.replace('/login')
           return
         }

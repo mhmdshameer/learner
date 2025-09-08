@@ -19,36 +19,6 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  const getUserData = async (token: string) => {
-    try {
-      const response = await fetch("/api/user", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!response.ok) {
-        if (response.status === 401 || response.status === 403) {
-          router.replace("/login");
-          return;
-        }
-        let message = "Failed to load user";
-        try {
-          const errData: unknown = await response.json();
-          if (isErrorPayload(errData) && typeof errData.message === "string") {
-            message = errData.message;
-          }
-        } catch {}
-        setError(message);
-        return;
-      }
-      const data = await response.json();
-      setUser(data.user);
-    } catch (e) {
-      console.log(e);
-      setError("Network error");
-    } finally {
-      setLoading(false);
-    }
-  }
-
   useEffect(() => {
     let isMounted = true;
     const token = localStorage.getItem("token");
@@ -59,7 +29,36 @@ export default function Home() {
     }
     (async () => {
       if (!isMounted) return;
-      await getUserData(token);
+      try {
+        const response = await fetch("/api/user", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!response.ok) {
+          if (response.status === 401 || response.status === 403) {
+            if (typeof window !== 'undefined') {
+              localStorage.removeItem("token");
+            }
+            router.replace("/login");
+            return;
+          }
+          let message = "Failed to load user";
+          try {
+            const errData: unknown = await response.json();
+            if (isErrorPayload(errData) && typeof errData.message === "string") {
+              message = errData.message;
+            }
+          } catch {}
+          setError(message);
+          return;
+        }
+        const data = await response.json();
+        setUser(data.user);
+      } catch (e) {
+        console.log(e);
+        setError("Network error");
+      } finally {
+        setLoading(false);
+      }
     })();
     return () => { isMounted = false; };
   }, [router]);

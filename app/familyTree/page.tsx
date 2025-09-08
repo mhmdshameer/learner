@@ -12,27 +12,38 @@ const FamilyTree = () => {
     const router = useRouter()
     const [user, setUser] = useState<UserDataProps | null>(null)
 
-    const fetchUser = async () => {
-        try {
-            const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
-            if (!token) return
-            const res = await fetch('/api/user', { headers: { Authorization: `Bearer ${token}` } })
-            if (res.status === 401 || res.status === 403) {
-              router.replace('/login')
-              return
-            }
-            if (res.ok) {
-              const data = await res.json()
-              const u = data?.user
-              setUser({ name: u?.name ?? "", imageUrl: u?.imageUrl ?? "" })
-            }
-          } catch {
-            // ignore
-          }
-    }
     useEffect(() => {
-        fetchUser()
-      }, [])
+      let mounted = true
+      ;(async () => {
+        try {
+          const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null
+          if (!token) {
+            if (typeof window !== 'undefined') {
+              localStorage.removeItem('token')
+            }
+            router.replace('/login')
+            return
+          }
+          const res = await fetch('/api/user', { headers: { Authorization: `Bearer ${token}` } })
+          if (!mounted) return
+          if (res.status === 401 || res.status === 403) {
+            if (typeof window !== 'undefined') {
+              localStorage.removeItem('token')
+            }
+            router.replace('/login')
+          }
+          if (res.ok) {
+            const data = await res.json()
+            const u = data?.user
+            setUser({ name: u?.name ?? "", imageUrl: u?.imageUrl ?? "" })
+          }
+        } catch {
+          // ignore
+        }
+      })()
+      return () => { mounted = false }
+    }, [router])
+
   return (
     <div className='flex justify-center items-center h-screen'>
       <MemberCard
