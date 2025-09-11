@@ -49,9 +49,9 @@ export default function Register() {
           <AvatarUploader
             onUploadSuccess={(url) => setData((prev) => ({ ...prev, imageUrl: url }))}
           />
-          {data.imageUrl && (
+          {data.imageUrl?.trim() && (
             <Image
-              src={data.imageUrl}
+              src={data.imageUrl.trim()}
               alt="Preview"
               className="mt-2 w-24 h-24 rounded-full object-cover"
               width={100}

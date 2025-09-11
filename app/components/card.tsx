@@ -10,9 +10,9 @@ type MemberCardProps = {
   relation?: string;
   name: string;
   imageUrl?: string;
+  memberId?: string;
   onEdit: () => void;
   onDelete: () => void;
-  onAdd: () => void;
   className?: string;
 };
 
@@ -20,9 +20,9 @@ export default function MemberCard({
   relation,
   name,
   imageUrl,
+  memberId,
   onEdit,
   onDelete,
-  onAdd,
   className,
 }: MemberCardProps) {
   const fallback = "/next.svg";
@@ -36,7 +36,7 @@ export default function MemberCard({
     >
       {/* Full-bleed image */}
       <Image
-        src={imageUrl ?? fallback}
+        src={imageUrl?.trim() || fallback}
         alt={name}
         fill
         sizes="140px"
@@ -92,7 +92,7 @@ export default function MemberCard({
           </Button>
         </div>
       </div>
-      <AddMemberModal open={open} onOpenChange={setOpen} parentName={name} onSubmit={onAdd} />
+      <AddMemberModal open={open} onOpenChange={setOpen} parentName={name} parentId={memberId} />
     </div>
   );
 }

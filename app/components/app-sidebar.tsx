@@ -118,7 +118,7 @@ export function AppSidebar() {
           >
             {
               <Image
-                src={user?.imageUrl ?? "/next.svg"}
+                src={user?.imageUrl?.trim() || "/next.svg"}
                 alt={user?.name || "User"}
                 width={24}
                 height={24}

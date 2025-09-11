@@ -6,16 +6,26 @@ const memberSchema = new Schema({
         type: String,
         required: [true, "Name is required"],
     },
-    photo: {
+    imageUrl: {
         type: String,
         required: [true, "Image URL is required"],
     },
     relation: {
         type: String,
         required: [true, "Relation is required"],
-    },     // Enum: 'Father', 'Mother', 'Wife', etc.
-    linkedTo: {type: Schema.Types.ObjectId, ref: "User"},   // Reference to main User or another member (to allow branching)
-    children: [{type: Schema.Types.ObjectId, ref: "User"}], // Array of FamilyMember references
+    },     // Enum: 'father', 'mother', 'wife', 'son', 'daughter', 'self', etc.
+    displayRelation: {
+        type: String,
+        required: false, // Optional custom label shown on the card relative to the root user
+        default: undefined,
+    },
+    linkedTo: {type: Schema.Types.ObjectId, ref: "Member"},
+    // Relationship arrays pointing to other Member documents
+    fathers: [{ type: Schema.Types.ObjectId, ref: "Member" }],
+    mothers: [{ type: Schema.Types.ObjectId, ref: "Member" }],
+    wives: [{ type: Schema.Types.ObjectId, ref: "Member" }],
+    sons: [{ type: Schema.Types.ObjectId, ref: "Member" }],
+    daughters: [{ type: Schema.Types.ObjectId, ref: "Member" }],
     createdAt: {
         type: Date,
         default: Date.now,

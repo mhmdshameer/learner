@@ -17,7 +17,13 @@ const userSchema = new Schema({
     password: {
         type: String,
         required: [true, "Password is required"],
-    }
+    },
+    // Relationship arrays pointing to Member documents
+    fathers: [{ type: Schema.Types.ObjectId, ref: "Member" }],
+    mothers: [{ type: Schema.Types.ObjectId, ref: "Member" }],
+    wives: [{ type: Schema.Types.ObjectId, ref: "Member" }],
+    sons: [{ type: Schema.Types.ObjectId, ref: "Member" }],
+    daughters: [{ type: Schema.Types.ObjectId, ref: "Member" }],
 })
 
 const User = models.User || model("User", userSchema);
