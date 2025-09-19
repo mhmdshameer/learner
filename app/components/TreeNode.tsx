@@ -36,6 +36,8 @@ function useSpouse(current: MemberNode, all: MemberNode[]) {
 
 function useParents(current: MemberNode, all: MemberNode[]) {
   return useMemo(() => {
+    console.log("useParents for current node:", current.name, current._id);
+    console.log("Searching for father in all nodes:", all.map(m => ({ name: m.name, relation: m.relation, linkedTo: m.linkedTo })));
     const isRoot = current.relation === "self";
     let father =
       all.find(
@@ -49,6 +51,7 @@ function useParents(current: MemberNode, all: MemberNode[]) {
     // If father not directly found, try to infer via a wife's linkage
     let motherViaWife: MemberNode | null = null;
     if (!father) {
+      console.log("Father not found directly. Trying via wife...");
       const wifePointingToFather = all.find((w) => {
         if (w.relation !== 'wife' || !w.linkedTo) return false;
         const f = all.find((x) => x._id === w.linkedTo && x.relation === 'father');
@@ -56,7 +59,7 @@ function useParents(current: MemberNode, all: MemberNode[]) {
         const connected = f.linkedTo === current._id || (isRoot && (f.linkedTo === null || typeof f.linkedTo === 'undefined'));
         if (connected) {
           father = f;
-          motherViaWife = w;
+          motherViaWife = w as MemberNode;
           return true;
         }
         return false;
@@ -64,6 +67,11 @@ function useParents(current: MemberNode, all: MemberNode[]) {
       void wifePointingToFather; // no-op just to make linter happy about the variable not used
     }
 
+    console.log("Found parents for", current.name, ":", {
+        father: father ? father.name : 'null',
+        mother: mother ? mother.name : 'null',
+        motherViaWife: (motherViaWife as MemberNode | null)?.name ?? 'null'
+    });
     return { father, mother, motherViaWife };
   }, [all, current]);
 }
