@@ -73,10 +73,11 @@ export const POST = async (req: Request) => {
 
     // Update relationship arrays on the clicked member and optionally mirror to User
     if (parentRef) {
-      const fieldMap: Record<string, 'fathers' | 'mothers' | 'wives' | 'sons' | 'daughters' | undefined> = {
+      const fieldMap: Record<string, 'fathers' | 'mothers' | 'wives' | 'husbands' | 'sons' | 'daughters' | undefined> = {
         father: 'fathers',
         mother: 'mothers',
         wife: 'wives',
+        husband: 'husbands',
         son: 'sons',
         daughter: 'daughters',
       };
@@ -130,8 +131,23 @@ export const GET = async (req: Request) => {
     }
 
     const docs = await Member.find({ userId })
-      .select("name imageUrl relation displayRelation linkedTo createdAt updatedAt")
-      .lean<{ _id: mongoose.Types.ObjectId; name: string; imageUrl: string; relation: string; displayRelation?: string; linkedTo?: mongoose.Types.ObjectId | null; createdAt: Date; updatedAt: Date; }[]>();
+      .select("name imageUrl relation displayRelation linkedTo fathers mothers wives husbands sons daughters createdAt updatedAt")
+      .lean<{
+        _id: mongoose.Types.ObjectId;
+        name: string;
+        imageUrl: string;
+        relation: string;
+        displayRelation?: string;
+        linkedTo?: mongoose.Types.ObjectId | null;
+        fathers?: mongoose.Types.ObjectId[];
+        mothers?: mongoose.Types.ObjectId[];
+        wives?: mongoose.Types.ObjectId[];
+        husbands?: mongoose.Types.ObjectId[];
+        sons?: mongoose.Types.ObjectId[];
+        daughters?: mongoose.Types.ObjectId[];
+        createdAt: Date;
+        updatedAt: Date;
+      }[]>();
 
     const members = docs.map((d) => ({
       _id: d._id.toString(),
@@ -140,6 +156,12 @@ export const GET = async (req: Request) => {
       relation: d.relation,
       displayRelation: d.displayRelation,
       linkedTo: d.linkedTo ? d.linkedTo.toString() : null,
+      fathers: (d.fathers || []).map((x) => x.toString()),
+      mothers: (d.mothers || []).map((x) => x.toString()),
+      wives: (d.wives || []).map((x) => x.toString()),
+      husbands: (d.husbands || []).map((x) => x.toString()),
+      sons: (d.sons || []).map((x) => x.toString()),
+      daughters: (d.daughters || []).map((x) => x.toString()),
       createdAt: d.createdAt,
       updatedAt: d.updatedAt,
     }));
