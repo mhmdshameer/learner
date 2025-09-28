@@ -3,7 +3,42 @@ import jwt from "jsonwebtoken";
 import { connectToMongoDB } from "@/lib/mongodb";
 import User from "@/models/userModel";
 import Member from "@/models/memberModel";
-import mongoose from "mongoose";
+import mongoose, { Document, Types } from "mongoose";
+
+interface IMemberDocument extends Document {
+  _id: Types.ObjectId;
+  userId: Types.ObjectId;
+  name: string;
+  imageUrl?: string;
+  relation: string;
+  displayRelation?: string;
+  linkedTo?: Types.ObjectId;
+  fathers: Types.ObjectId[];
+  mothers: Types.ObjectId[];
+  wives: Types.ObjectId[];
+  husbands: Types.ObjectId[];
+  sons: Types.ObjectId[];
+  daughters: Types.ObjectId[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface IMemberResponse {
+  _id: string;
+  name: string;
+  imageUrl?: string;
+  relation: string;
+  displayRelation?: string;
+  linkedTo: string | null;
+  fathers: string[];
+  mothers: string[];
+  wives: string[];
+  husbands: string[];
+  sons: string[];
+  daughters: string[];
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 interface JwtPayload {
   id: string;
@@ -73,25 +108,37 @@ export const POST = async (req: Request) => {
 
     // Update relationship arrays on the clicked member and optionally mirror to User
     if (parentRef) {
-      const fieldMap: Record<string, 'fathers' | 'mothers' | 'wives' | 'sons' | 'daughters' | undefined> = {
-        father: 'fathers',
-        mother: 'mothers',
-        wife: 'wives',
-        son: 'sons',
-        daughter: 'daughters',
+      const fieldMap: Record<string, { parentField: 'fathers' | 'mothers' | 'wives' | 'sons' | 'daughters', childField: 'sons' | 'daughters' | 'husbands' | 'fathers' | 'mothers' } | undefined> = {
+        father: { parentField: 'fathers', childField: 'sons' },
+        mother: { parentField: 'mothers', childField: 'daughters' },
+        wife: { parentField: 'wives', childField: 'husbands' },
+        son: { parentField: 'sons', childField: 'fathers' },
+        daughter: { parentField: 'daughters', childField: 'mothers' },
       };
-      const field = fieldMap[relation as keyof typeof fieldMap];
-      if (field) {
+      
+      const relationship = fieldMap[relation as keyof typeof fieldMap];
+      if (relationship) {
+        const { parentField, childField } = relationship;
+        
+        // Update parent's relationship array (e.g., add to father's sons array)
         await Member.findByIdAndUpdate(
           parentRef,
-          { $addToSet: { [field]: member._id }, $set: { updatedAt: new Date() } },
+          { $addToSet: { [parentField]: member._id }, $set: { updatedAt: new Date() } },
           { new: true }
         );
+        
+        // Update child's relationship array (e.g., add to son's fathers array)
+        await Member.findByIdAndUpdate(
+          member._id,
+          { $addToSet: { [childField]: parentRef }, $set: { updatedAt: new Date() } },
+          { new: true }
+        );
+        
         // If the clicked member is the root (self), mirror update on the User doc as well
         if (parentRelation === 'self') {
           await User.findByIdAndUpdate(
             userId,
-            { $addToSet: { [field]: member._id } },
+            { $addToSet: { [parentField]: member._id } },
           );
         }
       }
@@ -129,19 +176,45 @@ export const GET = async (req: Request) => {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
 
-    const docs = await Member.find({ userId })
-      .select("name imageUrl relation displayRelation linkedTo createdAt updatedAt")
-      .lean<{ _id: mongoose.Types.ObjectId; name: string; imageUrl: string; relation: string; displayRelation?: string; linkedTo?: mongoose.Types.ObjectId | null; createdAt: Date; updatedAt: Date; }[]>();
+    // Get member IDs from query params if provided
+    const { searchParams } = new URL(req.url);
+    const ids = searchParams.get('ids');
 
-    const members = docs.map((d) => ({
-      _id: d._id.toString(),
-      name: d.name,
-      imageUrl: d.imageUrl,
-      relation: d.relation,
-      displayRelation: d.displayRelation,
-      linkedTo: d.linkedTo ? d.linkedTo.toString() : null,
-      createdAt: d.createdAt,
-      updatedAt: d.updatedAt,
+    // Define the base query with user ID
+    const baseQuery = { userId };
+    
+    // If specific IDs are provided, fetch only those members
+    const query = ids 
+      ? { 
+          ...baseQuery, 
+          _id: { 
+            $in: ids.split(',').filter((id: string) => 
+              mongoose.Types.ObjectId.isValid(id)
+            ) 
+          } 
+        }
+      : baseQuery;
+
+    const docs = await Member.find(query)
+      .select("name imageUrl relation displayRelation linkedTo fathers mothers wives husbands sons daughters createdAt updatedAt")
+      .lean();
+
+    // Cast the lean documents to our interface and map to response
+    const members = (docs as unknown as IMemberDocument[]).map((doc): IMemberResponse => ({
+      _id: doc._id.toString(),
+      name: doc.name,
+      imageUrl: doc.imageUrl,
+      relation: doc.relation,
+      displayRelation: doc.displayRelation,
+      linkedTo: doc.linkedTo ? doc.linkedTo.toString() : null,
+      fathers: (doc.fathers || []).map(id => id.toString()),
+      mothers: (doc.mothers || []).map(id => id.toString()),
+      wives: (doc.wives || []).map(id => id.toString()),
+      husbands: (doc.husbands || []).map(id => id.toString()),
+      sons: (doc.sons || []).map(id => id.toString()),
+      daughters: (doc.daughters || []).map(id => id.toString()),
+      createdAt: doc.createdAt,
+      updatedAt: doc.updatedAt,
     }));
 
     return NextResponse.json({ members }, { status: 200 });

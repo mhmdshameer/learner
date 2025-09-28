@@ -1,0 +1,221 @@
+[33mcommit f44d74d92d4a703edd8fcafa6bc1006ab469aab8[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Sat Sep 20 21:08:51 2025 +0530
+
+     family tree page
+
+[33mcommit 4cc1d3e4a2232e3b2af57bf14239e961040e27b5[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Fri Sep 19 19:46:08 2025 +0530
+
+    Changes in tree node
+
+[33mcommit e52873f22d67aad5e92503b4e5d8877579bde9b6[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Thu Sep 11 21:39:22 2025 +0530
+
+    Schema change
+
+[33mcommit 7e1387537e2686439dfbd7458761c6814189df6a[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Mon Sep 8 08:25:51 2025 +0530
+
+    Member model
+
+[33mcommit 35efaf4abcc26c239ecd15a35953d51fff98c5cd[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Sun Aug 31 09:23:26 2025 +0530
+
+    Add member modal
+
+[33mcommit ba5554ca8a064e09b5c21dd33c9f276347ca902c[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Sat Aug 30 13:28:46 2025 +0530
+
+    Bg layout and member card
+
+[33mcommit 7148be7a501c5ca1a7734bf4bbb23e02420cde3d[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Fri Aug 29 07:19:35 2025 +0530
+
+    sidebar fix
+
+[33mcommit a0f018d4bfaeba11b9d9f7428829ab06babcd574[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Thu Aug 28 10:42:39 2025 +0530
+
+    sidebar
+
+[33mcommit 301a4d7b5834fc4f6e1023bc491f7ddc1e2ada7a[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Thu Aug 21 14:25:01 2025 +0530
+
+    ImageUrl saved
+
+[33mcommit b3cac388812ebd6d305c9a6bbe836d627948b653[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Thu Aug 21 11:52:29 2025 +0530
+
+    Register with image
+
+[33mcommit 0efb1555d0d7beecc32835eaac6aaa5562441f16[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Wed Aug 20 14:23:25 2025 +0530
+
+    cloudinary upload
+
+[33mcommit 2880b3f63bab48d83ba738629c3abf6c84d62d41[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Thu Aug 7 19:53:23 2025 +0530
+
+    Debug
+
+[33mcommit 6986990c98070fd52489bac6f95328ec232f651c[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Wed Aug 6 07:18:43 2025 +0530
+
+    Avatar uploader
+
+[33mcommit cc91c8696aa2b6b3d5e6aef6ede88408125c9a73[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Tue Aug 5 20:19:53 2025 +0530
+
+    image upload register
+
+[33mcommit 7ca6e19bffdf27d40c4937f7e86cdd80e13fb2c7[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Tue Aug 5 08:40:39 2025 +0530
+
+    Install next cloudinary
+
+[33mcommit e436f5efa57e9ea6c150125457af3e0c599c6ec7[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Sun Jul 27 12:06:08 2025 +0530
+
+    Axios
+
+[33mcommit aba4ad5f84df4fb46187e916685b26535f6c5adb[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Mon Jul 21 08:33:17 2025 +0530
+
+    login and logout
+
+[33mcommit d727133df1cadf3339b7747a3501d0fd7b7e79d7[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Sun Jul 20 11:33:16 2025 +0530
+
+    sign in api
+
+[33mcommit 326e30ce1aadb7110022f41f7e1190a934f23c4f[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Sat Jul 19 15:27:15 2025 +0530
+
+    register success
+
+[33mcommit 2f57789260bb97e6b89c514b54d8d67312f7d75d[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Tue Jul 15 22:09:46 2025 +0530
+
+    get token
+
+[33mcommit f91e89ac2bfc5173f3bf5beec2b7aa94c6809041[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Mon Jul 14 16:06:46 2025 +0530
+
+    get token
+
+[33mcommit 7f6be88efb81c73b1596e11ddf31a918cfa58a10[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Mon Jul 14 15:54:12 2025 +0530
+
+    call signup api
+
+[33mcommit 814306992dec4cdc1f5a9c190838c2b165dc2c79[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Sat Jul 12 20:06:25 2025 +0530
+
+    jwt
+
+[33mcommit abd6a389a85e1571b469fee18df9215fe8d32ae6[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Sat Jul 12 20:05:17 2025 +0530
+
+    jwt
+
+[33mcommit ca1a7415bb1837e6a3a3c5ebebb263427f48a09d[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Sat Jul 12 19:59:02 2025 +0530
+
+    signup route
+
+[33mcommit c56b585d0448ad832cf3ea3dacf9940615fe8d7c[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Sat Jul 12 19:57:05 2025 +0530
+
+    signup route
+
+[33mcommit c1d1519aaa1f57de101ceeb6320969b802f8d689[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Fri Jul 11 20:51:54 2025 +0530
+
+    new user Schema
+
+[33mcommit a74120339d44ac2878a86469b667e3fb7a56dd5b[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Fri Jul 11 20:51:26 2025 +0530
+
+    new user Schema
+
+[33mcommit c1bd4e15448ebbe1fe016eb5330ca00722c5e7a7[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Mon Jul 7 12:36:18 2025 +0530
+
+    eye off on in register
+
+[33mcommit e6c46af3cc0563a3fa1cb732efa6636b977930cb[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Mon Jul 7 12:11:18 2025 +0530
+
+    eye off on in login
+
+[33mcommit 713fd8f90daa2dc624a683b24f571f4af77f6d36[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Sun Jun 15 15:28:17 2025 +0530
+
+    console data
+
+[33mcommit 2467f182361459249ee4c216694c29e2af158686[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Sat Jun 14 09:03:00 2025 +0530
+
+    Register page
+
+[33mcommit 62b88188ab859f0b5b74e3be0384c987e4ae08d4[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Sat Jun 14 09:02:30 2025 +0530
+
+    Login page
+
+[33mcommit cc305b02aab579852b97f6f2097bd35f80dad1fb[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Sat Jun 14 07:09:45 2025 +0530
+
+    new file setup
+
+[33mcommit cedd7185040d878e00218c8f50d19eab39c1e560[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Sat Jun 14 06:49:40 2025 +0530
+
+    Beginning set up
+
+[33mcommit b606d1ed94796efef91cdfcc36ad5e5472c7582d[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Sun Jun 1 19:44:18 2025 +0530
+
+    first commit
+
+[33mcommit 67ff8942c4766f0f8f978367f11766aea23cdf55[m
+Author: Muhammed Shameer <mhmdshameerpm@gmail.com>
+Date:   Sun Jun 1 19:42:06 2025 +0530
+
+    Initial commit from Create Next App

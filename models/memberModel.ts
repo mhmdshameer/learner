@@ -24,6 +24,7 @@ const memberSchema = new Schema({
     fathers: [{ type: Schema.Types.ObjectId, ref: "Member" }],
     mothers: [{ type: Schema.Types.ObjectId, ref: "Member" }],
     wives: [{ type: Schema.Types.ObjectId, ref: "Member" }],
+    husbands:[{type: Schema.Types.ObjectId, ref: "Member" }],
     sons: [{ type: Schema.Types.ObjectId, ref: "Member" }],
     daughters: [{ type: Schema.Types.ObjectId, ref: "Member" }],
     createdAt: {

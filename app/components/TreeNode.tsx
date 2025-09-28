@@ -10,60 +10,84 @@ export type MemberNode = {
   relation: string; // 'self' | 'father' | 'mother' | 'wife' | 'son' | 'daughter' | ...
   linkedTo: string | null; // parent or partner linkage depending on relation
   displayRelation?: string; // Optional label to show on card relative to the user
+  // Relationship arrays
+  fathers?: string[];
+  mothers?: string[];
+  wives?: string[];
+  husbands?: string[];
+  sons?: string[];
+  daughters?: string[];
+  // Timestamps
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 interface TreeNodeProps {
   current: MemberNode;
-  all: MemberNode[];
+  all: Record<string, MemberNode>;
   // Rendering controls
   mode?: 'full' | 'ancestorsOnly' | 'descendantsOnly';
   showSpouse?: boolean;
 }
 
-function useSpouse(current: MemberNode, all: MemberNode[]) {
+function useSpouse(current: MemberNode, all: Record<string, MemberNode>) {
   return useMemo(() => {
     // Spouse logic:
     // - If someone has relation 'wife' and linkedTo === current._id, that is spouse
     // - If current is 'wife' and has linkedTo, spouse is the member whose _id === current.linkedTo
-    const wife = all.find((m) => m.relation === "wife" && m.linkedTo === current._id);
+    const wife = Object.values(all).find(
+      (m) => m.relation === "wife" && m.linkedTo === current._id
+    );
     if (wife) return wife;
     if (current.relation === "wife" && current.linkedTo) {
-      return all.find((m) => m._id === current.linkedTo) || null;
+      return all[current.linkedTo] || null;
     }
     return null;
   }, [all, current]);
 }
 
-function useParents(current: MemberNode, all: MemberNode[]) {
+function useParents(current: MemberNode, all: Record<string, MemberNode>) {
   return useMemo(() => {
-    console.log("useParents for current node:", current.name, current._id);
-    console.log("Searching for father in all nodes:", all.map(m => ({ name: m.name, relation: m.relation, linkedTo: m.linkedTo })));
     const isRoot = current.relation === "self";
-    let father =
-      all.find(
-        (m) => m.relation === "father" && (m.linkedTo === current._id || (isRoot && (m.linkedTo === null || typeof m.linkedTo === 'undefined')))
-      ) || null;
-    const mother =
-      all.find(
-        (m) => m.relation === "mother" && (m.linkedTo === current._id || (isRoot && (m.linkedTo === null || typeof m.linkedTo === 'undefined')))
-      ) || null;
+    
+    // Get parents from relationship arrays if available
+    if (current.fathers?.length || current.mothers?.length) {
+      return {
+        father: current.fathers?.[0] ? all[current.fathers[0]] : null,
+        mother: current.mothers?.[0] ? all[current.mothers[0]] : null,
+      };
+    }
+
+    // Fallback to old logic if relationship arrays are not available
+    const allMembers = Object.values(all);
+    let father = allMembers.find(m => 
+      m.relation === "father" && 
+      (m.linkedTo === current._id || 
+       (isRoot && (!m.linkedTo || m.linkedTo === 'undefined')))
+    ) || null;
+    
+    const mother = allMembers.find(
+      (m) => m.relation === "mother" && 
+      (m.linkedTo === current._id || (isRoot && (m.linkedTo === null || typeof m.linkedTo === 'undefined')))
+    ) || null;
 
     // If father not directly found, try to infer via a wife's linkage
     let motherViaWife: MemberNode | null = null;
     if (!father) {
       console.log("Father not found directly. Trying via wife...");
-      const wifePointingToFather = all.find((w) => {
+      const allValues = Object.values(all);
+      const wifePointingToFather = allValues.find((w) => {
         if (w.relation !== 'wife' || !w.linkedTo) return false;
-        const f = all.find((x) => x._id === w.linkedTo && x.relation === 'father');
+        const f = allValues.find((x) => x._id === w.linkedTo && x.relation === 'father');
         if (!f) return false;
         const connected = f.linkedTo === current._id || (isRoot && (f.linkedTo === null || typeof f.linkedTo === 'undefined'));
         if (connected) {
           father = f;
-          motherViaWife = w as MemberNode;
+          motherViaWife = w;
           return true;
         }
         return false;
-      })
+      });
       void wifePointingToFather; // no-op just to make linter happy about the variable not used
     }
 
@@ -76,20 +100,37 @@ function useParents(current: MemberNode, all: MemberNode[]) {
   }, [all, current]);
 }
 
-function useChildren(current: MemberNode, spouse: MemberNode | null, all: MemberNode[]) {
+function useChildren(current: MemberNode, spouse: MemberNode | null, all: Record<string, MemberNode>) {
   return useMemo(() => {
-    const parentIds = new Set<string>([current._id]);
-    if (spouse?._id) parentIds.add(spouse._id);
-    const isRoot = current.relation === "self";
-    return all.filter((m) => {
-      const isChild = m.relation === "son" || m.relation === "daughter";
-      if (!isChild) return false;
-      if (m.linkedTo && parentIds.has(m.linkedTo)) return true;
-      // Fallback: older data may have children with linkedTo null under root
-      if (isRoot && (m.linkedTo === null || typeof m.linkedTo === 'undefined')) return true;
-      return false;
-    });
-  }, [all, current._id, current.relation, spouse]);
+    const allMembers = Object.values(all);
+    
+    // Get children from relationship arrays if available
+    const childIds = [
+      ...(current.sons || []),
+      ...(current.daughters || []),
+      ...(spouse?.sons || []),
+      ...(spouse?.daughters || [])
+    ];
+    
+    if (childIds.length > 0) {
+      return childIds.map(id => all[id]).filter((m): m is MemberNode => !!m);
+    }
+    
+    // Fallback to old logic if relationship arrays are not available
+    let children = allMembers.filter(
+      (m) => m.linkedTo === current._id && (m.relation === "son" || m.relation === "daughter")
+    );
+    
+    // Also include children linked to spouse if they exist
+    if (spouse) {
+      const spouseChildren = allMembers.filter(
+        (m) => m.linkedTo === spouse._id && (m.relation === "son" || m.relation === "daughter")
+      );
+      children = [...children, ...spouseChildren];
+    }
+    
+    return children;
+  }, [all, current._id, spouse?._id, current.sons, current.daughters, spouse?.sons, spouse?.daughters]);
 }
 
 export default function TreeNode({ current, all, mode = 'full', showSpouse = true }: TreeNodeProps) {
@@ -104,7 +145,7 @@ export default function TreeNode({ current, all, mode = 'full', showSpouse = tru
   // If no explicit mother, but there is a father, use father's wife as the mother for display
   const fathersWife = useMemo(() => {
     if (!father) return null;
-    return all.find((m) => m.relation === 'wife' && m.linkedTo === father._id) || null;
+    return Object.values(all).find((m) => m.relation === 'wife' && m.linkedTo === father._id) || null;
   }, [all, father]);
   const displayMother = mother || motherViaWife || fathersWife;
 
@@ -114,7 +155,7 @@ export default function TreeNode({ current, all, mode = 'full', showSpouse = tru
     if (father?._id) ids.add(father._id);
     if (displayMother?._id) ids.add(displayMother._id);
     if (ids.size === 0) return [] as MemberNode[];
-    return all.filter(
+    return Object.values(all).filter(
       (m) => (m.relation === 'son' || m.relation === 'daughter') && !!m.linkedTo && ids.has(m.linkedTo) && m._id !== current._id
     );
   }, [all, father, displayMother, current._id]);
@@ -122,7 +163,7 @@ export default function TreeNode({ current, all, mode = 'full', showSpouse = tru
   const hasParents = !!(father || displayMother);
 
   return (
-    <div className="flex flex-col items-center gap-6">
+    <div className="flex flex-col items-center gap-6 bg-transparent">
       {/* Parents row (render ancestors recursively) */}
       {hasParents && (
         <div className="flex flex-col items-center">
